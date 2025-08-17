@@ -134,26 +134,28 @@ def run_simulation(step_order, steps, tank_cleaning_time, bioreactor_days, num_o
     st.plotly_chart(fig, use_container_width=True)
 
 # ---------------- Streamlit App ---------------- #
-st.title("Bioreactor Scheduling App")
+st.title("Manufacturing Scheduling App")
 
-st.sidebar.header("General Inputs")
+st.sidebar.header("About")
+st.sidebar.markdown("Application Assumes bottleneck is the cadence of the bioreactor and the inputs will determine the downstream schedule")
+st.sidebar.markdown("Bioreactor setting determines how many downstream cycles can be fitted")
 
 # Step order entry
-step_order = st.text_input("Enter step order (comma separated)", "A,B,C").split(",")
+step_order = st.text_input("Enter order of unit operations (comma separated)", "A,B,C").split(",")
 
 steps = {}
 for i, step in enumerate(step_order):
-    with st.expander("⚙️ Define Steps (click to expand)"):
+    with st.expander("⚙️ Define Unit Operaion (click to expand)"):
         st.markdown(f"**Step {step}**")
         setup = st.number_input(f"Setup time for {step}", value=5.0, key=f"{step}_setup")
         operation = st.number_input(f"Operation time for {step}", value=10.0, key=f"{step}_operation")
         cleaning = st.number_input(f"Cleaning time for {step}", value=2.0, key=f"{step}_cleaning")
-        tanks = st.text_input(f"Tanks used by {step} (comma separated)", f"Tank{i*2+1},Tank{i*2+2}", key=f"{step}_tanks")
+        tanks = st.text_input(f"Peripheral equipment used by {step} (comma separated)", f"Tank{i*2+1},Tank{i*2+2}", key=f"{step}_tanks")
         tanks = [t.strip() for t in tanks.split(",") if t.strip()]
         steps[step] = {"setup": setup, "operation": operation, "cleaning": cleaning, "tanks": tanks}
 
 # Tank cleaning dictionary inside expander
-with st.expander("🧴 Define Tank Cleaning Times (click to expand)"):
+with st.expander("🧴 Define Peripheral Equpiment Cleaning Times (click to expand)"):
     tank_cleaning_time = {}
     all_tanks = sorted({tank for s in steps.values() for tank in s["tanks"]})
     for tank in all_tanks:
